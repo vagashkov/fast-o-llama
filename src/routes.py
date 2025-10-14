@@ -1,11 +1,12 @@
 import logging
 
+from fastapi import HTTPException
 from http import HTTPStatus
 from httpx import get, post
 from pydantic import ValidationError as PydanticError
 
 from src.constants import BASE_URL
-from src.validators import LLModel
+from src.validators import LLModel, LLMFullDetails
 
 
 async def list_all_models():
@@ -35,7 +36,10 @@ async def list_all_models():
     # Return LLM aliases list
     return {
         "models": [
-            model_data.get("name")
+            {
+                "name": model_data.get("name").split(":")[0],
+                "version": model_data.get("name").split(":")[1]
+            }
             for model_data
             in response.json().get("models")
             ]
@@ -69,16 +73,19 @@ async def list_active_models():
     # Return LLM aliases list
     return {
         "models": [
-            model_data.get("name")
+            {
+                "name": model_data.get("name").split(":")[0],
+                "version": model_data.get("name").split(":")[1]
+            }
             for model_data
             in response.json().get("models")
-            ]
-        }
+        ]
+    }
 
 
 async def model_details(
         model_name: str,
-        version: str = "latest",
+        version: str,
         verbose: bool = False
 ):
     """
@@ -91,15 +98,35 @@ async def model_details(
 
     response = post(
         "{}/api/show".format(BASE_URL),
-        data={
+        json={
             "model": "{}:{}".format(model_name, version),
             "verbose": verbose
         }
     )
 
     if not response.status_code == HTTPStatus.OK:
+        # Process 'wrong model name/version' case
+        if response.status_code == HTTPStatus.NOT_FOUND:
+            raise HTTPException(
+                status_code=HTTPStatus.NOT_FOUND,
+                detail="The model {}:{} is not found".format(
+                    model_name, version
+                )
+            )
+        # Escalate other cases
         response.raise_for_status()
 
+    try:
+        LLMFullDetails.model_validate(
+            response.json()
+        )
+    except PydanticError as e:
+        logging.log(
+            logging.ERROR,
+            e
+        )
+
     return {
-        "model_details": response.json()
+        "model_info": response.json().get("model_info"),
+        "parameters": response.json().get("parameters")
     }

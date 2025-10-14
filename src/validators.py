@@ -43,3 +43,15 @@ class LLMInformation(BaseModel):
     ggml_pre: Optional[str]
     ggml_token_type: Optional[List]
     ggml_tokens: Optional[List]
+
+
+class LLMFullDetails(BaseModel):
+    """
+    Full LLM details
+    """
+
+    modelfile: Optional[str]
+    parameters: Optional[str]
+    template: Optional[str]
+    details: Optional[LLModelDetails]
+    info: LLMInformation
