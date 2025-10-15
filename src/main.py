@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter
 
 from src.constants import HTTPMethod
-from src.routes import (
+from src.routes.service import (
     list_all_models,
     list_active_models,
     model_details
