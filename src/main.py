@@ -4,7 +4,11 @@ from src.constants import HTTPMethod
 from src.routes.service import (
     list_all_models,
     list_active_models,
-    model_details
+    model_details, model_license,
+    model_modelfile, model_template, model_tensors
+)
+from src.routes.conversation import (
+    generate_text
 )
 
 app = FastAPI()
@@ -29,4 +33,39 @@ app.add_api_route(
     endpoint=model_details,
     methods=[HTTPMethod.GET],
     summary="Returns designated LLM details"
+)
+
+app.add_api_route(
+    "/models/{model_name}/{version}/license",
+    endpoint=model_license,
+    methods=[HTTPMethod.GET],
+    summary="Returns designated LLM license information"
+)
+
+app.add_api_route(
+    "/models/{model_name}/{version}/modelfile",
+    endpoint=model_modelfile,
+    methods=[HTTPMethod.GET],
+    summary="Returns designated LLM modelfile content"
+)
+
+app.add_api_route(
+    "/models/{model_name}/{version}/template",
+    endpoint=model_template,
+    methods=[HTTPMethod.GET],
+    summary="Returns designated LLM template"
+)
+
+app.add_api_route(
+    "/models/{model_name}/{version}/tensors",
+    endpoint=model_tensors,
+    methods=[HTTPMethod.GET],
+    summary="Returns designated LLM tensors"
+)
+
+app.add_api_route(
+    "/models/{model_name}/{version}/generate",
+    endpoint=generate_text,
+    methods=[HTTPMethod.POST],
+    summary="Processes single text generation request"
 )

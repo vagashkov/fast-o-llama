@@ -1,6 +1,5 @@
 import logging
 
-from fastapi import HTTPException
 from http import HTTPStatus
 from httpx import AsyncClient
 from pydantic import ValidationError as PydanticError
@@ -9,9 +8,14 @@ from src.constants import (
     LIST_ALL_MODELS_URL, LIST_ACTIVE_MODELS_URL,
     ERROR_GETTING_MODELS_LIST, ERROR_VALIDATING_MODELS_LIST,
     MODEL_DETAILS_URL, ERROR_MODEL_NOT_FOUND,
-    ERROR_GETTING_MODEL_DETAILS, ERROR_VALIDATING_MODEL_DETAILS
+    ERROR_GETTING_MODEL_DETAILS, ERROR_VALIDATING_MODEL_DETAILS,
+    MODEL_LICENSE_KEY, ERROR_GETTING_MODEL_LICENSE,
+    MODEL_MODELFILE_KEY, ERROR_GETTING_MODEL_FILE,
+    MODEL_TEMPLATE_KEY, ERROR_GETTING_MODEL_TEMPLATE,
+    MODEL_TENSORS_KEY, ERROR_GETTING_MODEL_TENSORS
 )
-from src.schema import LLModelsList, LLMFullDetails
+from src.schemas import LLModelsList, LLMFullDetails
+from src.utils import report_error
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,13 +37,7 @@ async def list_models(active: bool = False) -> LLModelsList:
                 url
             )
     except Exception as e:
-        logger.error(
-            ERROR_GETTING_MODELS_LIST.format(e)
-        )
-        raise HTTPException(
-            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-            detail=str(e)
-        )
+        report_error(ERROR_GETTING_MODELS_LIST.format(e))
 
     models_list = response.json()
 
@@ -49,9 +47,7 @@ async def list_models(active: bool = False) -> LLModelsList:
             models_list
         )
     except PydanticError as e:
-        logger.error(
-            ERROR_VALIDATING_MODELS_LIST.format(e)
-        )
+        report_error(ERROR_VALIDATING_MODELS_LIST.format(e))
 
     # Return result
     return LLModelsList(**models_list)
@@ -75,17 +71,17 @@ async def list_active_models() -> LLModelsList:
     return await list_models(active=True)
 
 
-async def model_details(
+async def get_model_data(
         model_name: str,
         version: str,
         verbose: bool = False
-):
+) -> dict:
     """
     Returns designated LLM details
     :param model_name:
     :param version
     :param verbose:
-    :return:
+    :return dict
     """
 
     try:
@@ -100,29 +96,157 @@ async def model_details(
     except Exception as e:
         # Check if designated model is not found
         if response.status_code == HTTPStatus.NOT_FOUND:
-            error = ERROR_MODEL_NOT_FOUND.format(model_name, version)
-            logger.error(error)
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND,
-                detail=error
+            report_error(
+                ERROR_MODEL_NOT_FOUND.format(
+                    model_name, version
+                )
             )
+
         # Any other error
-        raise HTTPException(
-            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-            detail=ERROR_GETTING_MODEL_DETAILS.format(e)
+        report_error(
+            ERROR_GETTING_MODEL_DETAILS.format(e)
         )
 
+    return response.json()
+
+
+async def model_details(
+        model_name: str,
+        version: str,
+        verbose: bool = False
+):
+    """
+    Returns designated LLM details
+    :param model_name:
+    :param version
+    :param verbose:
+    :return:
+    """
+
     # Extract and validate model description
-    model_data = response.json()
+    model_data = await get_model_data(model_name, version, verbose)
+
     try:
         LLMFullDetails.model_validate(
             model_data
         )
     except PydanticError as e:
-        logging.log(
-            logging.ERROR,
+        report_error(
             ERROR_VALIDATING_MODEL_DETAILS.format(e)
         )
 
     # Return results
     return LLMFullDetails(**model_data)
+
+
+async def model_license(
+        model_name: str,
+        version: str
+):
+    """
+    Returns designated LLM usage license
+    :param model_name:
+    :param version
+    :return:
+    """
+
+    # Extract and validate model description
+    model_data = await get_model_data(model_name, version, False)
+
+    # Check if response contains license data
+    if MODEL_LICENSE_KEY not in model_data:
+        report_error(
+            ERROR_GETTING_MODEL_LICENSE.format(
+                "{}:{}".format(model_name, version)
+            )
+        )
+
+    # Return results
+    return {
+        MODEL_LICENSE_KEY:
+            model_data.get(MODEL_LICENSE_KEY)
+    }
+
+
+async def model_modelfile(
+        model_name: str,
+        version: str
+):
+    """
+    Returns designated LLM modelfile content
+    :param model_name:
+    :param version
+    :return:
+    """
+
+    # Extract and validate model description
+    model_data = await get_model_data(model_name, version, False)
+
+    # Check if response contains modelfile
+    if MODEL_MODELFILE_KEY not in model_data:
+        report_error(
+            ERROR_GETTING_MODEL_FILE.format(
+                "{}:{}".format(model_name, version)
+            )
+        )
+
+    return {
+        MODEL_MODELFILE_KEY:
+        model_data.get(MODEL_MODELFILE_KEY)
+    }
+
+
+async def model_template(
+        model_name: str,
+        version: str
+):
+    """
+    Returns designated LLM template
+    :param model_name:
+    :param version
+    :return:
+    """
+
+    # Extract and validate model description
+    model_data = await get_model_data(model_name, version, False)
+
+    # Check if response contains template
+    if MODEL_TEMPLATE_KEY not in model_data:
+        report_error(
+            ERROR_GETTING_MODEL_TEMPLATE.format(
+                "{}:{}".format(model_name, version)
+            )
+        )
+
+    return {
+        MODEL_TEMPLATE_KEY:
+        model_data.get(MODEL_TEMPLATE_KEY)
+    }
+
+
+async def model_tensors(
+        model_name: str,
+        version: str
+):
+    """
+    Returns designated LLM tensors
+    :param model_name:
+    :param version
+    :return:
+    """
+
+    # Extract and validate model description
+    model_data = await get_model_data(model_name, version, False)
+
+    # Check if response contains tensors
+    if MODEL_TENSORS_KEY not in model_data:
+        report_error(
+            ERROR_GETTING_MODEL_TENSORS.format(
+                "{}:{}".format(model_name, version)
+            )
+        )
+
+    return {
+        MODEL_TENSORS_KEY:
+        model_data.get(MODEL_TENSORS_KEY)
+    }

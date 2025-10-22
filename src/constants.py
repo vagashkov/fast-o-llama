@@ -31,6 +31,7 @@ BASE_URL = "{}://{}:{}".format(
 LIST_ALL_MODELS_URL = "{}/api/tags".format(BASE_URL)
 LIST_ACTIVE_MODELS_URL = "{}/api/ps".format(BASE_URL)
 MODEL_DETAILS_URL = "{}/api/show".format(BASE_URL)
+MODEL_GENERATE_URL = "{}/api/generate".format(BASE_URL)
 
 ERROR = "error"
 ERROR_GETTING_MODELS_LIST = "Error getting models list: {}"
@@ -38,3 +39,19 @@ ERROR_VALIDATING_MODELS_LIST = "Error validating models list: {}"
 ERROR_GETTING_MODEL_DETAILS = "Error getting model details: {}"
 ERROR_MODEL_NOT_FOUND = "Model {}:{} not found"
 ERROR_VALIDATING_MODEL_DETAILS = "Error validating model details: {}"
+
+MODEL_LICENSE_KEY = "license"
+ERROR_GETTING_MODEL_LICENSE = "Error getting model license: {}"
+
+MODEL_MODELFILE_KEY = "modelfile"
+ERROR_GETTING_MODEL_FILE = "Error getting model Modelfile: {}"
+
+MODEL_TEMPLATE_KEY = "template"
+ERROR_GETTING_MODEL_TEMPLATE = "Error getting model template: {}"
+
+MODEL_TENSORS_KEY = "tensors"
+ERROR_GETTING_MODEL_TENSORS = "Error getting model tensors: {}"
+
+ERROR_REQUESTING_MODEL = "An error occurred while requesting {}"
+ERROR_MODEL_RESPONSE_STATUS = "Error response {} while requesting {}"
+ERROR_GETTING_MODEL_ANSWER = "Error getting model answer: {}"
