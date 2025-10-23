@@ -32,6 +32,15 @@ LIST_ALL_MODELS_URL = "{}/api/tags".format(BASE_URL)
 LIST_ACTIVE_MODELS_URL = "{}/api/ps".format(BASE_URL)
 MODEL_DETAILS_URL = "{}/api/show".format(BASE_URL)
 MODEL_GENERATE_URL = "{}/api/generate".format(BASE_URL)
+MODEL_CHAT_URL = "{}/api/chat".format(BASE_URL)
+
+SYSTEM_ROLE = "system"
+SYSTEM_MESSAGE = "You are a coding assistant. "
+"Keep your responses focused on software development and technical topics. "
+"Be concise and provide practical code examples when relevant. "
+"Limit explanations to 2-3 sentences unless code examples are needed."
+
+USER_ROLE = "user"
 
 ERROR = "error"
 ERROR_GETTING_MODELS_LIST = "Error getting models list: {}"

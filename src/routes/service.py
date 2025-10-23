@@ -1,5 +1,3 @@
-import logging
-
 from http import HTTPStatus
 from httpx import AsyncClient
 from pydantic import ValidationError as PydanticError
@@ -16,9 +14,6 @@ from src.constants import (
 )
 from src.schemas import LLModelsList, LLMFullDetails
 from src.utils import report_error
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 async def list_models(active: bool = False) -> LLModelsList:

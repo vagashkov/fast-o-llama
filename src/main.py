@@ -8,7 +8,7 @@ from src.routes.service import (
     model_modelfile, model_template, model_tensors
 )
 from src.routes.conversation import (
-    generate_text
+    generate_text, chat
 )
 
 app = FastAPI()
@@ -68,4 +68,11 @@ app.add_api_route(
     endpoint=generate_text,
     methods=[HTTPMethod.POST],
     summary="Processes single text generation request"
+)
+
+app.add_api_route(
+    "/models/{model_name}/{version}/chat",
+    endpoint=chat,
+    methods=[HTTPMethod.POST],
+    summary="Processes stream chat request"
 )
