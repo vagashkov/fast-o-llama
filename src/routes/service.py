@@ -1,8 +1,11 @@
 from http import HTTPStatus
+
+from fastapi import APIRouter
 from httpx import AsyncClient
 from pydantic import ValidationError as PydanticError
 
 from src.constants import (
+    HTTPMethod,
     LIST_ALL_MODELS_URL, LIST_ACTIVE_MODELS_URL,
     ERROR_GETTING_MODELS_LIST, ERROR_VALIDATING_MODELS_LIST,
     MODEL_DETAILS_URL, ERROR_MODEL_NOT_FOUND,
@@ -245,3 +248,52 @@ async def model_tensors(
         MODEL_TENSORS_KEY:
         model_data.get(MODEL_TENSORS_KEY)
     }
+
+
+service_router = APIRouter()
+
+service_router.add_api_route(
+    "/models",
+    endpoint=list_all_models,
+    methods=[HTTPMethod.GET],
+    summary="Returns all available LLMs (incl. aliases)"
+)
+service_router.add_api_route(
+    "/models/active",
+    endpoint=list_active_models,
+    methods=[HTTPMethod.GET],
+    summary="Returns active LLMs only (incl. aliases)"
+)
+service_router.add_api_route(
+    "/models/{model_name}/{version}",
+    endpoint=model_details,
+    methods=[HTTPMethod.GET],
+    summary="Returns designated LLM details"
+)
+service_router.add_api_route(
+    "/models/{model_name}/{version}/license",
+    endpoint=model_license,
+    methods=[HTTPMethod.GET],
+    summary="Returns designated LLM license information"
+)
+
+service_router.add_api_route(
+    "/models/{model_name}/{version}/modelfile",
+    endpoint=model_modelfile,
+    methods=[HTTPMethod.GET],
+    summary="Returns designated LLM modelfile content"
+)
+
+service_router.add_api_route(
+    "/models/{model_name}/{version}/template",
+    endpoint=model_template,
+    methods=[HTTPMethod.GET],
+    summary="Returns designated LLM template"
+)
+
+service_router.add_api_route(
+    "/models/{model_name}/{version}/tensors",
+    endpoint=model_tensors,
+    methods=[HTTPMethod.GET],
+    summary="Returns designated LLM tensors"
+)

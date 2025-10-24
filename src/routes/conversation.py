@@ -1,9 +1,11 @@
 from json import loads, dumps, JSONDecodeError
 
+from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from httpx import AsyncClient, RequestError, HTTPStatusError
 
 from src.constants import (
+    HTTPMethod,
     MODEL_GENERATE_URL, MODEL_CHAT_URL,
     SYSTEM_ROLE, SYSTEM_MESSAGE,
     ERROR_REQUESTING_MODEL,
@@ -16,6 +18,9 @@ from src.schemas import (
     ChatRequest
 )
 from src.utils import report_error
+
+
+conversation_router = APIRouter()
 
 
 async def generate_text(
@@ -162,3 +167,18 @@ async def chat(
         generate(),
         media_type="text/event-stream"
     )
+
+
+conversation_router.add_api_route(
+    "/models/{model_name}/{version}/generate",
+    endpoint=generate_text,
+    methods=[HTTPMethod.POST],
+    summary="Processes single text generation request"
+)
+
+conversation_router.add_api_route(
+    "/models/{model_name}/{version}/chat",
+    endpoint=chat,
+    methods=[HTTPMethod.POST],
+    summary="Processes stream chat request"
+)
