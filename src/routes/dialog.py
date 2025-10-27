@@ -20,7 +20,7 @@ from src.schemas import (
 from src.utils import report_error
 
 
-conversation_router = APIRouter()
+router = APIRouter()
 
 
 async def generate_text(
@@ -169,14 +169,14 @@ async def chat(
     )
 
 
-conversation_router.add_api_route(
+router.add_api_route(
     "/models/{model_name}/{version}/generate",
     endpoint=generate_text,
     methods=[HTTPMethod.POST],
     summary="Processes single text generation request"
 )
 
-conversation_router.add_api_route(
+router.add_api_route(
     "/models/{model_name}/{version}/chat",
     endpoint=chat,
     methods=[HTTPMethod.POST],

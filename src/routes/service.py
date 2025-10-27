@@ -250,48 +250,48 @@ async def model_tensors(
     }
 
 
-service_router = APIRouter()
+router = APIRouter()
 
-service_router.add_api_route(
+router.add_api_route(
     "/models",
     endpoint=list_all_models,
     methods=[HTTPMethod.GET],
     summary="Returns all available LLMs (incl. aliases)"
 )
-service_router.add_api_route(
+router.add_api_route(
     "/models/active",
     endpoint=list_active_models,
     methods=[HTTPMethod.GET],
     summary="Returns active LLMs only (incl. aliases)"
 )
-service_router.add_api_route(
+router.add_api_route(
     "/models/{model_name}/{version}",
     endpoint=model_details,
     methods=[HTTPMethod.GET],
     summary="Returns designated LLM details"
 )
-service_router.add_api_route(
+router.add_api_route(
     "/models/{model_name}/{version}/license",
     endpoint=model_license,
     methods=[HTTPMethod.GET],
     summary="Returns designated LLM license information"
 )
 
-service_router.add_api_route(
+router.add_api_route(
     "/models/{model_name}/{version}/modelfile",
     endpoint=model_modelfile,
     methods=[HTTPMethod.GET],
     summary="Returns designated LLM modelfile content"
 )
 
-service_router.add_api_route(
+router.add_api_route(
     "/models/{model_name}/{version}/template",
     endpoint=model_template,
     methods=[HTTPMethod.GET],
     summary="Returns designated LLM template"
 )
 
-service_router.add_api_route(
+router.add_api_route(
     "/models/{model_name}/{version}/tensors",
     endpoint=model_tensors,
     methods=[HTTPMethod.GET],

@@ -1,5 +1,7 @@
 from enum import Enum
 
+from src.config import settings
+
 
 class HTTPMethod(str, Enum):
     # Supported HTTP methods
@@ -7,26 +9,10 @@ class HTTPMethod(str, Enum):
     POST = "POST"
 
 
-class Environment(str, Enum):
-    # Application running modes
-    DEVELOPMENT = "DEVELOPMENT"
-    PRODUCTION = "PRODUCTION"
-
-    @property
-    def is_developed(self) -> bool:
-        return self in (self.DEVELOPMENT, )
-
-    @property
-    def is_deployed(self) -> bool:
-        return self in (self.PRODUCTION, )
-
-
-OLLAMA_SCHEMA = "http"
-OLLAMA_HOST = "localhost"
-OLLAMA_PORT = "11434"
-
 BASE_URL = "{}://{}:{}".format(
-    OLLAMA_SCHEMA, OLLAMA_HOST, OLLAMA_PORT
+    settings.OLLAMA_SCHEMA,
+    settings.OLLAMA_HOST,
+    settings.OLLAMA_PORT
 )
 LIST_ALL_MODELS_URL = "{}/api/tags".format(BASE_URL)
 LIST_ACTIVE_MODELS_URL = "{}/api/ps".format(BASE_URL)

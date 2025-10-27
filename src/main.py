@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.routes.service import service_router
-from src.routes.conversation import conversation_router
+from src.routes.service import router as service_router
+from src.routes.dialog import router as dialog_router
 
 app = FastAPI(title="Ollama connector for RAG support")
 
@@ -19,8 +19,8 @@ app.include_router(
     prefix="/api/v1/service"
 )
 app.include_router(
-    conversation_router,
-    prefix="/api/v1/conversation"
+    dialog_router,
+    prefix="/api/v1/dialog"
 )
 
 
