@@ -16,6 +16,7 @@ BASE_URL = "{}://{}:{}".format(
 )
 LIST_ALL_MODELS_URL = "{}/api/tags".format(BASE_URL)
 LIST_ACTIVE_MODELS_URL = "{}/api/ps".format(BASE_URL)
+MODEL_PULL_URL = "{}/api/pull".format(BASE_URL)
 MODEL_DETAILS_URL = "{}/api/show".format(BASE_URL)
 MODEL_GENERATE_URL = "{}/api/generate".format(BASE_URL)
 MODEL_CHAT_URL = "{}/api/chat".format(BASE_URL)
@@ -31,6 +32,7 @@ USER_ROLE = "user"
 ERROR = "error"
 ERROR_GETTING_MODELS_LIST = "Error getting models list: {}"
 ERROR_VALIDATING_MODELS_LIST = "Error validating models list: {}"
+ERROR_PULLING_MODEL = "Error pulling model: {}"
 ERROR_GETTING_MODEL_DETAILS = "Error getting model details: {}"
 ERROR_MODEL_NOT_FOUND = "Model {}:{} not found"
 ERROR_VALIDATING_MODEL_DETAILS = "Error validating model details: {}"

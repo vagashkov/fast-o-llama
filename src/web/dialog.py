@@ -12,15 +12,12 @@ from src.constants import (
     ERROR_MODEL_RESPONSE_STATUS,
     ERROR_GETTING_MODEL_ANSWER
 )
-from src.schemas import (
+from src.model.dialog import (
     GenerationRequest,
     GenerationResponse,
     ChatRequest
 )
 from src.utils import report_error
-
-
-router = APIRouter()
 
 
 async def generate_text(
@@ -168,6 +165,8 @@ async def chat(
         media_type="text/event-stream"
     )
 
+
+router = APIRouter()
 
 router.add_api_route(
     "/models/{model_name}/{version}/generate",

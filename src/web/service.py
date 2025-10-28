@@ -1,13 +1,14 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter
-from httpx import AsyncClient
+from httpx import AsyncClient, RequestError
 from pydantic import ValidationError as PydanticError
 
 from src.constants import (
     HTTPMethod,
     LIST_ALL_MODELS_URL, LIST_ACTIVE_MODELS_URL,
     ERROR_GETTING_MODELS_LIST, ERROR_VALIDATING_MODELS_LIST,
+    MODEL_PULL_URL, ERROR_PULLING_MODEL,
     MODEL_DETAILS_URL, ERROR_MODEL_NOT_FOUND,
     ERROR_GETTING_MODEL_DETAILS, ERROR_VALIDATING_MODEL_DETAILS,
     MODEL_LICENSE_KEY, ERROR_GETTING_MODEL_LICENSE,
@@ -15,7 +16,7 @@ from src.constants import (
     MODEL_TEMPLATE_KEY, ERROR_GETTING_MODEL_TEMPLATE,
     MODEL_TENSORS_KEY, ERROR_GETTING_MODEL_TENSORS
 )
-from src.schemas import LLModelsList, LLMFullDetails
+from src.model.service import LLModelsList, LLMFullDetails
 from src.utils import report_error
 
 
@@ -250,6 +251,34 @@ async def model_tensors(
     }
 
 
+async def pull_model(
+        model_name: str,
+        version: str
+):
+    """
+    Pulls designated LLM from ollama model hub
+    :param model_name:
+    :param version
+    :return:
+    """
+    try:
+        async with AsyncClient() as client:
+            response = await client.post(
+                MODEL_PULL_URL,
+                # timeout is big enough to load LLM into memory
+                timeout=10.0,
+                json={
+                    "model": "{}:{}".format(model_name, version)
+                },
+            )
+            response.raise_for_status()
+        return {"status": "success"}
+    except RequestError as exc:
+        report_error(ERROR_PULLING_MODEL.format(exc.request.url))
+    except Exception as e:
+        report_error(ERROR_PULLING_MODEL.format(e))
+
+
 router = APIRouter()
 
 router.add_api_route(
@@ -296,4 +325,11 @@ router.add_api_route(
     endpoint=model_tensors,
     methods=[HTTPMethod.GET],
     summary="Returns designated LLM tensors"
+)
+
+router.add_api_route(
+    "/models/{model_name}/{version}/pull",
+    endpoint=pull_model,
+    methods=[HTTPMethod.GET],
+    summary="Pulls designated LLM from ollama model hub"
 )

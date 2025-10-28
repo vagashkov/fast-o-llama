@@ -2,8 +2,6 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-from src.constants import USER_ROLE
-
 
 class LLModelDetails(BaseModel):
     parent_model: Optional[str]
@@ -72,28 +70,3 @@ class LLMFullDetails(BaseModel):
     details: Optional[LLModelDetails]
     model_info: LLMInformation
     capabilities: List[str]
-
-
-class GenerationRequest(BaseModel):
-    prompt: str
-
-
-class GenerationResponse(BaseModel):
-    text: str
-
-
-class ChatMessage(BaseModel):
-    role: str = USER_ROLE
-    content: str
-
-
-class ChatRequest(BaseModel):
-    messages: List[ChatMessage]
-    temperature: float = 0.7
-    stream: bool = True
-
-
-class ChatResponse(BaseModel):
-    message: ChatMessage
-    created_at: str
-    done: bool = True
