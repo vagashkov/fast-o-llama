@@ -174,3 +174,4 @@ dump.rdb
 
 # media files storage
 media/
+.DS_Store

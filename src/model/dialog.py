@@ -1,29 +1,32 @@
 from pydantic import BaseModel
 from typing import List
 
-from src.constants import USER_ROLE
+from src.constants import (
+    Role, DEFAULT_TEMPEATURE, DEFAULT_STREAM_MODE
+)
 
 
-class GenerationRequest(BaseModel):
+class LLMGenerationRequest(BaseModel):
     prompt: str
 
 
-class GenerationResponse(BaseModel):
+class LLMGenerationResponse(BaseModel):
     text: str
 
 
-class ChatMessage(BaseModel):
-    role: str = USER_ROLE
+class LLMChatMessage(BaseModel):
+    # 'user' is the default role for user chat messages
+    role: str = Role.USER
     content: str
 
 
-class ChatRequest(BaseModel):
-    messages: List[ChatMessage]
-    temperature: float = 0.7
-    stream: bool = True
+class LLMChatRequest(BaseModel):
+    messages: List[LLMChatMessage]
+    temperature: float = DEFAULT_TEMPEATURE
+    stream: bool = DEFAULT_STREAM_MODE
 
 
-class ChatResponse(BaseModel):
-    message: ChatMessage
+class LLMChatResponse(BaseModel):
+    message: LLMChatMessage
     created_at: str
-    done: bool = True
+    done: bool

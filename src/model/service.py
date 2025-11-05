@@ -4,12 +4,12 @@ from typing import List, Optional
 
 
 class LLModelDetails(BaseModel):
-    parent_model: Optional[str]
-    format: Optional[str]
-    family: Optional[str]
-    families: Optional[List[str]]
-    parameter_size: Optional[str]
-    quantization_level: Optional[str]
+    parent_model: str
+    format: str
+    family: str
+    families: List[str]
+    parameter_size: str
+    quantization_level: str
 
 
 class LLModel(BaseModel):
@@ -32,9 +32,6 @@ class LLMInformation(BaseModel):
     finetune: str = Field(alias="general.finetune")
     # Base model info
     base_model_count: int = Field(alias="general.base_model.count")
-    # general.base_model.0.name
-    # general.base_model.0.organization
-    # general.base_model.0.repo_url
     # License info
     license: str = Field(alias="general.license")
     license_link: str = Field(alias="general.license.link")

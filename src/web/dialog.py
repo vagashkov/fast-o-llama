@@ -5,17 +5,17 @@ from fastapi.responses import StreamingResponse
 from httpx import AsyncClient, RequestError, HTTPStatusError
 
 from src.constants import (
-    HTTPMethod,
+    HTTPMethod, Role,
     MODEL_GENERATE_URL, MODEL_CHAT_URL,
-    SYSTEM_ROLE, SYSTEM_MESSAGE,
+    SYSTEM_MESSAGE,
     ERROR_REQUESTING_MODEL,
     ERROR_MODEL_RESPONSE_STATUS,
     ERROR_GETTING_MODEL_ANSWER
 )
 from src.model.dialog import (
-    GenerationRequest,
-    GenerationResponse,
-    ChatRequest
+    LLMGenerationRequest,
+    LLMGenerationResponse,
+    LLMChatRequest
 )
 from src.utils import report_error
 
@@ -23,7 +23,7 @@ from src.utils import report_error
 async def generate_text(
         model_name: str,
         version: str,
-        request: GenerationRequest
+        request: LLMGenerationRequest
 ):
     """
     Processes single text generation request
@@ -65,7 +65,7 @@ async def generate_text(
                 # Some gibberish - skip it
                 continue
 
-        return GenerationResponse(text=full_text)
+        return LLMGenerationResponse(text=full_text)
 
     except RequestError as exc:
         report_error(ERROR_REQUESTING_MODEL.format(exc.request.url))
@@ -82,7 +82,7 @@ async def generate_text(
 async def chat(
         model_name: str,
         version: str,
-        request: ChatRequest
+        request: LLMChatRequest
 ):
     """
     Enables stream chat support
@@ -101,7 +101,7 @@ async def chat(
             async with AsyncClient() as client:
                 # Define system message to begin the dialog
                 system_message = {
-                    "role": SYSTEM_ROLE,
+                    "role": Role.SYSTEM,
                     "content": SYSTEM_MESSAGE,
                 }
 
