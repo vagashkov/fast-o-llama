@@ -24,7 +24,7 @@ async def generate_text(
         model_name: str,
         version: str,
         request: LLMGenerationRequest
-):
+) -> LLMGenerationResponse:
     """
     Processes single text generation request
     :param model_name:
@@ -83,7 +83,7 @@ async def chat(
         model_name: str,
         version: str,
         request: LLMChatRequest
-):
+) -> StreamingResponse:
     """
     Enables stream chat support
     :param model_name

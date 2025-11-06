@@ -1,6 +1,7 @@
 from enum import Enum
+from functools import lru_cache
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
 
 
 class Environment(str, Enum):
@@ -17,7 +18,7 @@ class Environment(str, Enum):
         return self in (self.PRODUCTION, )
 
 
-class Config(BaseSettings):
+class Settings(BaseSettings):
     """
     Project environment settings storage definition
     """
@@ -28,11 +29,15 @@ class Config(BaseSettings):
     OLLAMA_HOST: str = "localhost"
     OLLAMA_PORT: str = "11434"
 
-    model_config = SettingsConfigDict(
-        env_file="../.env",
-        env_file_encoding="utf-8",
-        extra="ignore"
-    )
+    class Config:
+        env_file = "../.env"
+        env_file_encoding = "utf-8",
+        extra = "ignore"
 
 
-settings = Config()
+@lru_cache()
+def get_settings() -> Settings:
+    return Settings()
+
+
+settings = get_settings()

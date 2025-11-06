@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import List
 
 from src.constants import (
-    Role, DEFAULT_TEMPEATURE, DEFAULT_STREAM_MODE
+    Role, DEFAULT_TEMPERATURE, DEFAULT_STREAM_MODE
 )
 
 
@@ -22,7 +22,7 @@ class LLMChatMessage(BaseModel):
 
 class LLMChatRequest(BaseModel):
     messages: List[LLMChatMessage]
-    temperature: float = DEFAULT_TEMPEATURE
+    temperature: float = DEFAULT_TEMPERATURE
     stream: bool = DEFAULT_STREAM_MODE
 
 
